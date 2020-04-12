@@ -1,0 +1,31 @@
+import pandas as pds
+import random as rd
+
+worddata = pds.read_csv('ENGLISH WORDS study.csv')
+rfnddt = worddata.fillna(value=' ').copy()
+
+
+def definitionprint(dfdata, i):
+    print('DEFINITION #1 : ', dfdata.loc[i][3])
+    if dfdata.loc[i][6] != ' ':
+        print('DEFINITION #2 : ', dfdata.loc[i][6])
+        
+        
+        
+answer = ''
+while answer != 'iquit':
+    i = rd.randrange(0,len(rfnddt),1)
+    
+    ac = ''
+    definitionprint(rfnddt, i)
+    
+    trycount = 0
+    while trycount < 5:
+        trycount += 1
+        answer = input()
+        
+        if answer == rfnddt.loc[i][0]:
+            print("CORRECT")
+            trycount = 5
+        else:
+            print("It's ", rfnddt.loc[i][0])
