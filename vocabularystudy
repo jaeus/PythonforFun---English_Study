@@ -1,7 +1,7 @@
 import pandas as pds
 import random as rd
 
-worddata = pds.read_csv('ENGLISH WORDS study.csv')
+worddata = pds.read_csv('english words study.csv')
 rfnddt = worddata.fillna(value=' ').copy()
 
 
