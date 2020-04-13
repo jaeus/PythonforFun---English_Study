@@ -1,5 +1,6 @@
 import pandas as pds
 import random as rd
+import time
 
 worddata = pds.read_csv('english words study.csv')
 rfnddt = worddata.fillna(value=' ').copy()
@@ -18,6 +19,7 @@ while answer != 'iquit':
     
     ac = ''
     definitionprint(rfnddt, i)
+    time.sleep(0.3)
     
     trycount = 0
     while trycount < 5:
