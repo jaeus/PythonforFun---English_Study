@@ -1,0 +1,8 @@
+nw = pds.read_csv('NEWWORDCHECK.csv')
+
+print('total', len(nw), 'words')
+for i in range(len(nw)):
+    print('word #', i+1)
+    for j in range(len(rfnddt)):
+        if nw.loc[i][0] == rfnddt.loc[j][0]:
+            print('"',nw.loc[i][0], '" is duplicated.')
