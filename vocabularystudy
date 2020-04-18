@@ -1,49 +1,54 @@
 import pandas as pds
 import random as rd
 import time
+from gtts import gTTS
+from pygame import mixer
 
 worddata = pds.read_csv('IELTS WORDS study.csv')
 rfnddt = worddata.fillna(value=' ').copy()
 
     
 def definitionprint(dfdata, i):
-    print('DEFINITION #1 : ', dfdata.loc[i][3])
+    print('DEFINITION #1 :', dfdata.loc[i][3])
     if dfdata.loc[i][6] != ' ':
-        print('DEFINITION #2 : ', dfdata.loc[i][6])
+        print('DEFINITION #2 :', dfdata.loc[i][6])
+        if dfdata.loc[i][9] != ' ':
+            print('DEFINITION #3 :', dfdata.loc[i][9])
 
         
 def answercheck(dfdata, typedword, i):
     checking = ''
     if typedword == dfdata.loc[i][0]:
+        playthefile()
         checking = 'correct'
-        print(rfnddt.loc[i][0], " (", rfnddt.loc[i][1], ")")
+        
+        print(dfdata.loc[i][0], " (", dfdata.loc[i][1], ")")
         if dfdata.loc[i][5] != ' ':
             print(dfdata.loc[i][5])
         if dfdata.loc[i][8] != ' ':
             print(dfdata.loc[i][8])
+        if dfdata.loc[i][11] != ' ':
+            print(dfdata.loc[i][11])
     
     return checking
 
 
 def exampletyping(dfdata, i):
-    if dfdata.loc[i][4] != ' ':
-        print('EXAMPLE #1 : ', dfdata.loc[i][4])
-        while 1:
-            typeanswer = input()
-            if typeanswer == dfdata.loc[i][4]:
-                break
-            if typeanswer == 'iquit':
-                break
-    if dfdata.loc[i][7] != ' ':
-        print('EXAMPLE #2 : ', dfdata.loc[i][7])
-        while 1:
-            typeanswer = input()
-            if typeanswer == dfdata.loc[i][7]:
-                break
-            if typeanswer == 'iquit':
-                break
-                
-                
+    no = 1
+    for ii in range(4, 11, 3):
+        if dfdata.loc[i][ii] != ' ':
+            speakingpreparation(dfdata.loc[i][ii], 's')
+            print('EXAMPLE #%' %(no), ':', dfdata.loc[i][ii])
+            playthefile()
+            no += 1
+            while 1:
+                typeanswer = input()
+                if typeanswer == dfdata.loc[i][ii]:
+                    break
+                if typeanswer == 'iquit':
+                    break
+                    
+                    
 def wordslist(dfdata, i):
     pick5 = rd.sample(range(0,len(dfdata)),5)
     pick5[rd.randrange(0,5,1)] = i
@@ -51,9 +56,24 @@ def wordslist(dfdata, i):
     print(dfdata.loc[pick5[0]][0], "   ", dfdata.loc[pick5[1]][0], "   ",
           dfdata.loc[pick5[2]][0], "   ", dfdata.loc[pick5[3]][0], "   ",
           dfdata.loc[pick5[4]][0])
-        
-        
+    
 
+def speakingpreparation(stuff, speed):
+    if speed == 's':
+        speakingspeed = False
+    else:
+        speakingspeed = False
+    tts = gTTS(text = stuff, lang = 'en', slow = speakingspeed)
+    tts.save('IVP.mp3')
+    
+    
+def playthefile():
+    mixer.init()
+    mixer.music.load('IVP.mp3')
+    mixer.music.play()
+    
+    
+    
 answer = ''
 howmanygames = 5
 answeratonce = []
@@ -70,7 +90,7 @@ while answer != 'iquit':
             
     ac = ''
     definitionprint(rfnddt, i)
-    time.sleep(0.3)
+    speakingpreparation(rfnddt.loc[i][0], 'w')
     
     trycount = 0
     while trycount < howmanygames:
