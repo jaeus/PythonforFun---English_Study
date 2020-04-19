@@ -1,15 +1,18 @@
 import pandas as pds
 
 rawdata = pds.read_csv('GRAMMAR PRACTICE.csv')
-print('Chapter %s' %int(rawdata.loc[0][0]), ' "%s"' %(rawdata.loc[0][1]))
+rfnddt = rawdata.fillna(value=' ').copy()
+
+print('Chapter %s' %int(rfnddt.loc[0][0]), ' "%s"' %(rfnddt.loc[0][1]))
 
 for i in range(0, 3, 1):
-    print(rawdata.loc[i][2], print(rawdata.loc[i][3]))
+    print(rfnddt.loc[i][2], print(rfnddt.loc[i][3]))
     
     for j in range(4, 10, 1):
-        if rawdata.loc[i][j] != ' ':
-            while 1:
-                print(rawdata.loc[i][j])
+        if rfnddt.loc[i][j] != ' ':
+            answer = ''
+            while answer != 'iquit':
+                print(rfnddt.loc[i][j])
                 answer = input()
-                if rawdata.loc[i][j] == answer:
+                if rfnddt.loc[i][j] == answer:
                     break
