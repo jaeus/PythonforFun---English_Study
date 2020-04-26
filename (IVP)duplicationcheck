@@ -1,0 +1,37 @@
+#DUPLICATED WORD CHECK
+print("choose a checking mode\n1-compare with a word list file(csv needed) // 2-check the list itself")
+
+selectmode = 0
+while 1:
+    selectmode = int(input())
+    if selectmode == 1 or selectmode == 2:
+        break
+    else:
+        print('enter either 1 or 2')
+        
+if selectmode == 1:
+    nw = pds.read_csv('NEWWORDCHECK.csv')
+
+    print('total', len(nw), 'words')
+    for i in range(len(nw)):
+        dwck = 0
+        for j in range(len(rfnddt)):
+            if nw.loc[i][0] == rfnddt.loc[j][0]:
+                print('%s is duplicated.' %(nw.loc[i][0]))
+                dwck = 1
+        if dwck == 0:
+            print('"%s" is a new word' %(nw.loc[i][0]))
+elif selectmode == 2:
+    for i in range(len(rfnddt)):
+        compareword = rfnddt.loc[i][0]
+        count = 0
+        loc = []
+        for j in range(len(rfnddt)):
+            if compareword == rfnddt.loc[j][0]:
+                count += 1
+                loc.append(j+1)
+        
+        if count > 1:
+            print('"%s" IS DUPLICATED AT %s' %(compareword, loc))
+
+print('ALL DONE')
