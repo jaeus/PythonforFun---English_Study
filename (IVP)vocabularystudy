@@ -18,11 +18,11 @@ def typedesignator(definput):
 def ttsonoff():
     while 1:
         deftts = input('Type [O] to turn on TTS / Type [X] to do without TTS : ')
-        if deftts == 'O':
+        if deftts == 'O' or deftts == 'o':
             print('TTS is on')
             pronouncerinitializing()
             break
-        elif deftts == 'X':
+        elif deftts == 'X' or deftts == 'x':
             print('TTS is off')
             break
         else:
@@ -65,7 +65,10 @@ def definitionprint(dfdata, i):
     no = 1
     for ii in range(3, 10, 3):
         if dfdata.loc[i][ii] != ' ':
-            print('DEFINITION #%s' %(no), ':', dfdata.loc[i][ii])
+            if dfdata.loc[i][ii+2] != ' ':
+                print('DEFINITION #%s : %s (%s)' %(no, dfdata.loc[i][ii], dfdata.loc[i][ii+2]))
+            else:
+                print('DEFINITION #%s : %s' %(no, dfdata.loc[i][ii]))
             no += 1
     return()
 
@@ -220,7 +223,9 @@ while answer != 'end':
         print("Type [a] to add word to review later / Enter none or other keys to read definitions and next words\n")
         while 1:
             i = preprintedcheck(rfnddt, printedbefore)[0]
-            print(rfnddt.loc[i][0])
+            print('%s (%s)' %(rfnddt.loc[i][0], rfnddt.loc[i][1]))
+            if rfnddt.loc[i][2] != ' ':
+                print(rfnddt.loc[i][2])
             answer = input()
             if answer == 'end':
                 savedwordsprint(rfnddt, answer, savedwords)
@@ -234,6 +239,7 @@ while answer != 'end':
             
     elif selectmode == '3':
         ttsswitch = ttsonoff()
+        
         
         while answer != 'end':
             wordonthelist = 'X'
