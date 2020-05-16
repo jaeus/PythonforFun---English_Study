@@ -1,9 +1,11 @@
 import pandas as pds
 import time
 
-rawdata = pds.read_csv('GRAMMAR PRACTICE.csv')
+rawdata = pds.read_excel('GRAMMAR PRACTICE.xlsx')
 rfnddt = rawdata.fillna(value=' ').copy()
 
+
+#decide the input data whether it's int or str
 def typedesignator(definput):
     try:
         result = int(definput)
@@ -11,11 +13,11 @@ def typedesignator(definput):
         result = str(definput)
     return(result)
 
-
+#initialize lists including chapter and each cahpter's contents row numbers
 def listinitializing(inputdt):
-    defchno = []
-    defistart = []
-    defiend = []
+    defchno = [] #every chapter's row number
+    defistart = [] #start row number of each chapter's contents
+    defiend = [] #end row number of each chapter's contents 
     for i in range(len(inputdt)):
         if inputdt.loc[i][0] != ' ':
             defchno.append(i)
@@ -25,13 +27,12 @@ def listinitializing(inputdt):
             defiend.append(len(inputdt))
         else:
             defiend.append(defchno[j+1])
-    
     return(defchno, defistart, defiend)
 
-
+#print chapter numbers and titles by the mode number
 def printchapters(inputdt, defchno, defistart, modeno):
     print('\n')
-    if modeno == '1' or modeno == '4':
+    if modeno == '1' or modeno == '2':
         for i in range(len(defchno)):
             print('Chapter %s  %s'
                   %(int(inputdt.loc[defistart[i]][0]),
@@ -40,8 +41,9 @@ def printchapters(inputdt, defchno, defistart, modeno):
         print('Chapter %s  %s'
       %(int(inputdt.loc[defistart[defchno]][0]),
         inputdt.loc[defistart[defchno]][1]))
+    return()
 
-
+#select chapter only when the mode is specific for
 def chapterselect(inputdt, defistart, defchno, modeno):
     defindexno = ' '
     ch = 'init'
@@ -49,13 +51,13 @@ def chapterselect(inputdt, defistart, defchno, modeno):
         if ch == 'init':
             printchapters(inputdt, defchno, defistart, modeno)
             
-        ch = typedesignator(input('\nType a chapter number : '))
+        ch = typedesignator(input('\nEnter a chapter number : '))
         if type(ch) == str:
-            if ch == 'end' or ch == 'quit':
+            if ch == 'end' or ch == 'iquit':
                 answer = 'end'
                 break
             else:
-                print('\nTYPE A PROPER CHARACTER\n')
+                print('\nENTER A PROPER CHARACTER\n')
         elif type(ch) == int: 
             if ch == 0:
                 ch = 'init'
@@ -68,21 +70,20 @@ def chapterselect(inputdt, defistart, defchno, modeno):
                     break
             else:
                 print('\nTYPE A PROPER CHAPTER NUMBER ON THE LIST\n')
-            
     return(defindexno, ch)
 
-
+#print contents and type examples or skip
 def chapterpractice(inputdt, defistart, defiend, defindexno, modeno):
     for i in range(defistart[defindexno], defiend[defindexno]):
-        if inputdt.loc[i][2] != ' ':
+        if inputdt.loc[i][2] != ' ': #content printing part
             if inputdt.loc[i][3] != ' ':
                 print('++ %s\n=> %s' %(inputdt.loc[i][2], inputdt.loc[i][3]))
             else:
                 print('++ %s' %(inputdt.loc[i][2]))
                 
-        for j in range(4, 13):
+        for j in range(4, 13): #example printing part
             if inputdt.loc[i][j] != ' ':
-                if modeno == '3' or modeno =='4':
+                if modeno == '2' or modeno =='4':
                     print(inputdt.loc[i][j])
                 else:
                     defanswer = ''
@@ -92,21 +93,19 @@ def chapterpractice(inputdt, defistart, defiend, defindexno, modeno):
                         defanswer = input()
                         if defanswer == inputdt.loc[i][j]:
                             break
-                        elif defanswer == 'n':
+                        elif defanswer == '':
                             break
                         elif defanswer == 'iquit' or defanswer == 'end':
                             break
                     if defanswer == 'iquit' or defanswer == 'end':
                         break
-        if modeno == '3' or modeno =='4':
+        if modeno == '2' or modeno =='4':
             defanswer = input()
-        if defanswer =='end':
+        if defanswer =='end' or defanswer == 'iquit':
             break
-    if defanswer != 'end':
+    if defanswer != 'end' and defanswer != 'iquit':
         print('END OF THE CHAPTER')
-        
     return(defanswer)
-
 
 
 
@@ -117,10 +116,11 @@ istart = listinitializing(rfnddt)[1]
 iend = listinitializing(rfnddt)[2]
 
 while answer != 'end':
-    print('\nCHOOSE A MODE\n1-Pick chapters from the list showing')
-    print('2-Practice from the beginning')
-    print('3-Show whole chapter without example sentences typing')
-    print('4-Pick chapters from the list showing without example sentences typing')
+    print('\nCHOOSE A MODE')
+    print('1-Pick chapters from the list showing')
+    print('2-Pick chapters from the list showing without example sentences typing')
+    print('3-Practice from the beginning')
+    print('4-Show whole chapter without example sentences typing')
     selectmode = 0
     while 1:
         time.sleep(0.3)
@@ -130,23 +130,28 @@ while answer != 'end':
             answer = 'end'
             break
         else:
-            selectmode = input('\nEnter either 1 or 2 or 3 or 4: ')
+            answer = ''
+            selectmode = input('\nEnter 1 or 2 or 3 or 4 : ')
         
-    if selectmode == '1' or selectmode =='4':
-        while answer != 'end':
+    if selectmode == '1' or selectmode =='2':
+        while answer != 'end' and answer != 'iquit':
             time.sleep(0.3)
 
             chapterresult = chapterselect(rfnddt, istart, chno, selectmode)
-            if chapterresult[1] == 'end':
+            if chapterresult[1] == 'iquit':
+                answer = 'iquit'
+                break
+            elif chapterresult[1] == 'end':
                 answer = 'end'
                 break
-            indexno = chapterresult[0]
-            
+            indexno = chapterresult[0]            
             answer = chapterpractice(rfnddt, istart, iend, indexno, selectmode)
-    elif selectmode == '2' or selectmode == '3':
+    elif selectmode == '3' or selectmode == '4':
         for i in range(len(istart)):
             printchapters(rfnddt, i, istart, selectmode)
-            answer = chapterpractice(rfnddt, istart, iend, indexno, selectmode)
-            if answer == 'end':
+            answer = chapterpractice(rfnddt, istart, iend, i, selectmode)
+            if answer == 'iquit':
+                break
+            elif answer == 'end':
                 break
         print('\n\n')
