@@ -1,0 +1,75 @@
+import pandas as pds
+import random as rd
+import time
+
+idiomdt = pds.read_excel('IDIOMS PRACTICE.xlsx')
+
+
+#create a random number to indicate an idiom
+def rownumbergenerator(dfdata, preanswer):
+    while 1:
+        no = rd.randrange(0,len(dfdata),1)
+        sameornot = 0
+        for i in preanswer:
+            if no == i:
+                sameornot = 1
+        if sameornot == 0:
+            break
+    return(no)
+
+#print the idiom, explanation, and example
+def contentsprint(dfdata, no):
+    print('\n[%s] -> %s\ni.e.) %s' %(dfdata.loc[no][0], dfdata.loc[no][1], dfdata.loc[no][2]))
+    return()
+
+
+
+
+
+answer = ''
+printed =[]
+yourownexamle = pds.DataFrame(data = {'IDIOM' : [], 'EXAMPLE' : []})
+while answer != 'end':
+    print('\nCHOOSE A MODE')
+    print('1-Practice with your own example')
+    print('2-Type the same examples')
+    print('3-Check idioms without typing')
+    
+    selectmode = 0
+    while 1:
+        time.sleep(0.3)
+        if selectmode == '1' or selectmode == '2' or selectmode == '3':
+            break
+        elif selectmode == 'end':
+            answer = 'end'
+            break
+        else:
+            answer = ''
+            selectmode = input('\nEnter 1 or 2 or 3 : ')
+        
+    while answer != 'end':
+        i = rownumbergenerator(idiomdt, printed)
+        printed.append(i)
+        if selectmode == '1':
+            contentsprint(idiomdt, i)
+            answer = input('YOUR EXAMPLE - ')
+            if answer == 'end' or answer == 'iquit':
+                break
+            else:
+                yourownexamle = yourownexamle.append({'IDIOM' : idiomdt.loc[i][0], 'EXAMPLE' : answer},
+                                                     ignore_index = True)
+        elif selectmode == '2':
+            contentsprint(idiomdt, i)
+            answer = input('TYPE THE EXAMPLE SENTENCE - ')
+            if answer == 'end' or answer == 'iquit':
+                break
+            elif answer == idiomdt.loc[i][2]:
+                break
+        elif selectmode == '3':
+            contentsprint(idiomdt, i)
+            answer = input('PRESS ENTER TO NEXT')
+            if answer == 'end' or answer == 'iquit':
+                break
+    
+    if selectmode == '1':
+        yourownexamle.to_excel('JAYs_ANSWER.xlsx', index = False)
