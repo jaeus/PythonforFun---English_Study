@@ -1,6 +1,8 @@
 import pandas as pds
 import random as rd
 import time
+from datetime import datetime
+import smtplib, ssl
 
 idiomdt = pds.read_excel('IDIOMS PRACTICE.xlsx')
 
@@ -22,13 +24,26 @@ def contentsprint(dfdata, no):
     print('\n[%s] -> %s\ni.e.) %s' %(dfdata.loc[no][0], dfdata.loc[no][1], dfdata.loc[no][2]))
     return()
 
+#send the answer as an email
+def emailsender(exampledata):
+    sender = 'EMAIL'
+    senderpw = 'PASSWORD'
+    receiver = 'EMAIL'
+    emailcontents = 'Subject : IDIOM PRACTICE BY JAY, %s\n' %(datetime.date(datetime.now()))
+    for i in range(len(exampledata)):
+        emailcontents = emailcontents + '[%s]\n%s\n=>\n\n' %(exampledata.loc[i][0], exampledata.loc[i][1])
+    emailcontents = emailcontents + '\n\n PUBLISHED BY JAY education. ALL RIGHTS RESERVED.'
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context = ssl.create_default_context()) as server:
+        server.login(sender, senderpw)    
+        server.sendmail(sender, receiver, emailcontents)
+
 
 
 
 
 answer = ''
 printed =[]
-yourownexamle = pds.DataFrame(data = {'IDIOM' : [], 'EXAMPLE' : []})
+yourownexample = pds.DataFrame(data = {'IDIOM' : [], 'EXAMPLE' : []})
 while answer != 'end':
     print('\nCHOOSE A MODE')
     print('1-Practice with your own example')
@@ -56,7 +71,7 @@ while answer != 'end':
             if answer == 'end' or answer == 'iquit':
                 break
             else:
-                yourownexamle = yourownexamle.append({'IDIOM' : idiomdt.loc[i][0], 'EXAMPLE' : answer},
+                yourownexample = yourownexample.append({'IDIOM' : idiomdt.loc[i][0], 'EXAMPLE' : answer},
                                                      ignore_index = True)
         elif selectmode == '2':
             contentsprint(idiomdt, i)
@@ -72,4 +87,18 @@ while answer != 'end':
                 break
     
     if selectmode == '1':
-        yourownexamle.to_excel('JAYs_ANSWER.xlsx', index = False)
+        print('Type [E] to send the examples through email / [F] to save as an Excel file at a local drive')
+        howtosave = ''
+        while 1:
+            time.sleep(0.3)
+            if howtosave == 'F' or howtosave == 'f' or howtosave == 'E' or howtosave == 'e':
+                break
+            else:
+                howtosave = input('\nEnter [E] or [F] : ')
+        
+        if howtosave == 'E' or howtosave == 'e':
+            emailsender(yourownexample)
+            print('EMAIL SENT')
+        else:
+            yourownexample.to_excel('(%s)IDIOM ANSWER.xlsx' %(datetime.date(datetime.now())), index = False)
+            print('FILE SAVED')
