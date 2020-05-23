@@ -2,7 +2,7 @@ import pandas as pds
 import random as rd
 import time
 
-worddata = pds.read_csv('IELTS WORDS study.csv')
+worddata = pds.read_excel('IELTS WORDS STUDY.xlsx')
 rfnddt = worddata.fillna(value=' ').copy()
 
 
@@ -52,12 +52,13 @@ def preprintedcheck(dfdata, old):
 def rownumbergenerator(dfdata, preanswer):
     while 1:
         no = rd.randrange(0,len(dfdata),1)
-        sameornot = 0
-        for i in preanswer:
-            if no == i:
-                sameornot = 1
-        if sameornot == 0:
-            break
+        if dfdata.loc[no][3] != ' ':
+            sameornot = 0
+            for i in preanswer:
+                if no == i:
+                    sameornot = 1
+            if sameornot == 0:
+                break
     return(no)
 
 
@@ -76,7 +77,7 @@ def definitionprint(dfdata, i):
 def savedwordsprint(dfdata, typedword, wordlist):
     if len(wordlist) != 0:
         sortedlist = sorted(wordlist)
-        print('THE NUMBER OF THE WORDS YOU SAVED : %s' %(sortedlist))
+        print('THE ROW NUMBER OF THE WORDS YOU SAVED : %s' %(sortedlist))
         for no in sortedlist:
             print(dfdata.loc[no][0])
     return()
@@ -135,12 +136,6 @@ def wordslist(dfdata, i):
 
 
 #TTS part
-def pronouncerinitializing():
-    from gtts import gTTS
-    from pygame import mixer
-    return()
-
-
 def speakingpreparation(stuff, speed):
     #speaking speed, slower one is too weird to hear 
     if speed == 's':
@@ -157,17 +152,17 @@ def playthefile():
     mixer.music.load('IVP.mp3')
     mixer.music.play()
     return()
-    
-    
-    
-    
-    
+
+
+
+
 answer = ''
 answeratonce = []
 printedbefore = []
 savedwords = []
 while answer != 'end':
-    print('\nCHOOSE A MODE\n1-Assume the answer from definitions of the word')
+    print('\nCHOOSE A MODE')
+    print('1-Assume the answer from definitions of the word')
     print('2-Study each word and mark for later')
     print('3-Type words for definitions and example sentences')
     print('4-Find the row number of the words')
@@ -192,6 +187,8 @@ while answer != 'end':
             i = rownumbergenerator(rfnddt, answeratonce)
             definitionprint(rfnddt, i)
             if ttsswitch == 'O':
+                from gtts import gTTS
+                from pygame import mixer
                 speakingpreparation(rfnddt.loc[i][0], 'w')
 
             answercompare = ''
@@ -214,7 +211,7 @@ while answer != 'end':
                     hint = 'did'
             if answer != 'iquit' and answer != 'end':
                 if answercompare != 'correct':
-                    print("It's '", rfnddt.loc[i][0],"'.\n")
+                    print("It's [%s].\n' %(rfnddt.loc[i][0])")
                     
                     
     elif selectmode == '2':
