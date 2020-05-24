@@ -26,17 +26,17 @@ def contentsprint(dfdata, no):
 
 #send the answer as an email
 def emailsender(exampledata):
-    sender = 'EMAIL'
+    sender = 'SENDER EMAIL'
     senderpw = 'PASSWORD'
-    receiver = 'EMAIL'
-    emailcontents = 'Subject : IDIOM PRACTICE BY JAY, %s\n' %(datetime.date(datetime.now()))
+    receiver = 'RECIEVER EMAIL'
+    emailcontents = "Subject : TODAY'S IDIOM PRACTICE, %s\n" %(datetime.now().strftime('[%H:%M] %B-%d'))
     for i in range(len(exampledata)):
         emailcontents = emailcontents + '[%s]\n%s\n=>\n\n' %(exampledata.loc[i][0], exampledata.loc[i][1])
     emailcontents = emailcontents + '\n\n PUBLISHED BY JAY education. ALL RIGHTS RESERVED.'
     with smtplib.SMTP_SSL('smtp.gmail.com', 465, context = ssl.create_default_context()) as server:
         server.login(sender, senderpw)    
         server.sendmail(sender, receiver, emailcontents)
-
+    return()
 
 
 
@@ -100,5 +100,6 @@ while answer != 'end':
             emailsender(yourownexample)
             print('EMAIL SENT')
         else:
-            yourownexample.to_excel('(%s)IDIOM ANSWER.xlsx' %(datetime.date(datetime.now())), index = False)
+            yourownexample.to_excel('IDIOM ANSWER (%s).xlsx' %(datetime.now().strftime('[%H:%M] %B-%d')),
+                                    index = False)
             print('FILE SAVED')
