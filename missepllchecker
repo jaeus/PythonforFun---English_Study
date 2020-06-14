@@ -4,29 +4,47 @@ from spellchecker import SpellChecker
 
 spell = SpellChecker()
 checkingavoid = ['syn', 'ant', 'isn', 'aren', 'wasn', 'weren', 'doesn', 'haven', 'hadn', 
-                 'wouldn', 'shouldn', 'couldn', 'don', 'cannot', 'sbd', 'so', 'sth']
+                 'wouldn', 'shouldn', 'couldn', 'don', 'cannot', 'sbd', 'so', 'sth',
+                 'traveled', 'canceled', 'hasn', 'hadn', 'shubert', 'cineplex', 'pajamas']
 
-# exceldata = pds.read_excel('IELTS WORDS STUDY.xlsx')
-exceldata = pds.read_excel('GRAMMAR PRACTICE.xlsx')
+checker = ''
+while 1:
+    if checker == 'G' or checker == 'V':
+        break
+    else:
+        checker = input('TYPE [G] for checking Grammar Practice / [V] for checking Vocabulary Practice : ').capitalize()
+        
+if checker == 'V':
+    exceldata = pds.read_excel('IELTS WORDS STUDY.xlsx')
+elif checker == 'G':
+    exceldata = pds.read_excel('GRAMMAR PRACTICE.xlsx')
+else:
+    print('WRONG TYPE HAS BEEN CHOSEN')
 rfndexcel = exceldata.fillna(value=' ').copy()
 
-for i in range(len(rfndexcel)):
-    mistyped =[]
-#     for j in range(3,11): #WORDS STUDY FILE
-    for j in range(1,13): #GRAMMAR PRACTICE FILE
-        if rfndexcel.loc[i][j] != ' ':
-            targetsentence = spell.split_words(rfndexcel.loc[i][j])
-            misspelled = spell.unknown(targetsentence)
-            if misspelled != set():
-                key = 1
-                for word in misspelled:
-                    for checker in checkingavoid:
-                        if word == checker:
-                            key = 0
-                            break
-                    if key == 1:
-                        mistyped.append(word)
 
-    if len(mistyped) > 0:
-        print('ROW No. %s : %s' %(i+2, mistyped))
-print('ALL DONE')
+if checker =='V' or checker == 'G':
+    for i in range(len(rfndexcel)):
+        mistyped =[]
+        if checker == 'V':
+            rowno = [3, 11]
+        else:
+            rowno = [1, 13]
+
+        for j in range(rowno[0], rowno[1]):
+            if rfndexcel.loc[i][j] != ' ':
+                targetsentence = spell.split_words(rfndexcel.loc[i][j])
+                misspelled = spell.unknown(targetsentence)
+                if misspelled != set():
+                    key = 1
+                    for word in misspelled:
+                        for checker in checkingavoid:
+                            if word == checker:
+                                key = 0
+                                break
+                        if key == 1:
+                            mistyped.append(word)
+
+        if len(mistyped) > 0:
+            print('ROW No. %s : %s' %(i+2, mistyped))
+    print('ALL DONE')
