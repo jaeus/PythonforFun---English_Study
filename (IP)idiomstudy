@@ -7,6 +7,21 @@ import smtplib, ssl
 idiomdt = pds.read_excel('IDIOMS PRACTICE.xlsx')
 
 
+
+def tendigits(tendigitlist):
+    no = (int(datetime.now().strftime('%d'))%10)*10
+    while no < (int(datetime.now().strftime('%d'))%10)*10 + 10:
+        tendigitlist.append(no)
+        no += 1
+    return(tendigitlist)
+
+def typedesignator(definput):
+    try:
+        result = int(definput)
+    except ValueError:
+        result = str(definput)
+    return(result)
+
 #create a random number to indicate an idiom
 def rownumbergenerator(dfdata, preanswer):
     while 1:
@@ -19,6 +34,21 @@ def rownumbergenerator(dfdata, preanswer):
             break
     return(no)
 
+def howtoprint():
+    print('\nSELECT A PRACTICE MODE')
+    print('R - Practice randomly')
+    print('N - Your own number')
+    print('D - Daily amount(10)')
+    
+    printtype = ''
+    while 1:
+        if printtype == 'R' or printtype == 'N' or printtype == 'D' or printtype == 'End':
+            break
+        else:
+            printtype = input('Enter [R] or [N] or [D] : ').capitalize()
+            
+    return(printtype)
+
 #print the idiom, explanation, and example
 def contentsprint(dfdata, no):
     print('\n[%s] -> %s\ni.e.) %s' %(dfdata.loc[no][0], dfdata.loc[no][1], dfdata.loc[no][2]))
@@ -28,11 +58,11 @@ def contentsprint(dfdata, no):
 def emailsender(exampledata):
     sender = 'SENDER EMAIL'
     senderpw = 'PASSWORD'
-    receiver = 'RECIEVER EMAIL'
-    emailcontents = "Subject : TODAY'S IDIOM PRACTICE, %s\n" %(datetime.now().strftime('[%H:%M] %B-%d'))
+    receiver = 'RECEIVER EMAIL'
+    emailcontents = "Subject : IDIOM PRACTICE BY JAY, %s\n" %(datetime.now().strftime('[%H:%M] %B-%d'))
     for i in range(len(exampledata)):
         emailcontents = emailcontents + '[%s]\n%s\n=>\n\n' %(exampledata.loc[i][0], exampledata.loc[i][1])
-    emailcontents = emailcontents + '\n\n PUBLISHED BY JAY education. ALL RIGHTS RESERVED.'
+    emailcontents = emailcontents + '\n\nPUBLISHED BY [JAY education]. ALL RIGHTS RESERVED.'
     with smtplib.SMTP_SSL('smtp.gmail.com', 465, context = ssl.create_default_context()) as server:
         server.login(sender, senderpw)    
         server.sendmail(sender, receiver, emailcontents)
@@ -41,8 +71,11 @@ def emailsender(exampledata):
 
 
 
+
 answer = ''
-printed =[]
+printed = []
+examplesfortheday = []
+examplesfortheday = tendigits(examplesfortheday)
 yourownexample = pds.DataFrame(data = {'IDIOM' : [], 'EXAMPLE' : []})
 while answer != 'end':
     print('\nCHOOSE A MODE')
@@ -54,16 +87,39 @@ while answer != 'end':
     while 1:
         time.sleep(0.3)
         if selectmode == '1' or selectmode == '2' or selectmode == '3':
+            printway = howtoprint()
             break
         elif selectmode == 'end':
             answer = 'end'
             break
         else:
-            answer = ''
             selectmode = input('\nEnter 1 or 2 or 3 : ')
-        
+            
+    j = 0
     while answer != 'end':
-        i = rownumbergenerator(idiomdt, printed)
+        if printway == 'R':
+            i = rownumbergenerator(idiomdt, printed)
+        elif printway == 'N':
+            i = 0
+            while 1:
+                if type(i) == str and i == 'end':
+                    answer = 'end'
+                    break
+                elif type(i) == int and i >= 1 and i <= 100:
+                    i -= 1
+                    break
+                else:
+                    i = typedesignator(input('Enter the number between 1 to 100 : '))
+        elif printway == 'D':
+            if j == 10:
+                break
+            i = examplesfortheday[j]
+            j += 1
+            
+        if i == 'end' or printway == 'End':
+            answer = 'end'
+            break
+            
         printed.append(i)
         if selectmode == '1':
             contentsprint(idiomdt, i)
@@ -82,24 +138,25 @@ while answer != 'end':
                 break
         elif selectmode == '3':
             contentsprint(idiomdt, i)
-            answer = input('PRESS ENTER TO NEXT')
+            answer = input('PRESS ENTER TO NEXT ')
             if answer == 'end' or answer == 'iquit':
                 break
     
-    if selectmode == '1':
+    if selectmode == '1' and answer != 'end':
         print('Type [E] to send the examples through email / [F] to save as an Excel file at a local drive')
         howtosave = ''
         while 1:
             time.sleep(0.3)
-            if howtosave == 'F' or howtosave == 'f' or howtosave == 'E' or howtosave == 'e':
+            if howtosave == 'F' or howtosave == 'E' or howtosave == 'End':
+                answer = 'end'
                 break
             else:
-                howtosave = input('\nEnter [E] or [F] : ')
+                howtosave = input('\nEnter [E] or [F] : ').capitalize()
         
-        if howtosave == 'E' or howtosave == 'e':
+        if howtosave == 'E':
             emailsender(yourownexample)
             print('EMAIL SENT')
-        else:
+        elif howtosave == 'F':
             yourownexample.to_excel('IDIOM ANSWER (%s).xlsx' %(datetime.now().strftime('[%H:%M] %B-%d')),
                                     index = False)
             print('FILE SAVED')
