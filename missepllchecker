@@ -1,37 +1,33 @@
-#SPELL CHECK
 import pandas as pds
 from spellchecker import SpellChecker
 
 spell = SpellChecker()
 checkingavoid = ['syn', 'ant', 'isn', 'aren', 'wasn', 'weren', 'doesn', 'haven', 'hadn', 
                  'wouldn', 'shouldn', 'couldn', 'don', 'cannot', 'sbd', 'so', 'sth',
-                 'traveled', 'canceled', 'hasn', 'hadn', 'shubert', 'cineplex', 'pajamas']
+                 'traveled', 'canceled', 'hasn', 'hadn', 'shubert', 'cineplex', 'pajamas',
+                 'dvd', 'charactered', 'timeline', 'megacity', 'choreograph', 'witted',
+                 'aspected', 'dissatisfy', 'dissatisfies', 'scoped', 'paralyzing', 'emend',
+                 'traveler', 'semiconscious', 'stupefy', 'nostalgics', 'website', 'vegetating',
+                 'fiber', 'semiarid', 'unman', 'cozied', 'overelaborate', 'prefabricate',
+                 'ultramodern', 'computerize', 'transfigure', 'nonnative', 'colorful',
+                 'midterm', 'endeavored', 'slummed', 'nearsighted', 'vapor', 'overexerting',
+                 'nonviable', 'insolvable', 'unrepairable', 'honorable', 'unequaled',
+                 'colorless', 'odorless', 'tetraethyl', 'clerking', 'believability', 'laborer',
+                 'moneymaking', 'journaled', 'websites', 'mainstreamed', 'misreporting',
+                 'sensationalists', 'esthetic', 'choreographing', 'choreographs',
+                 'transitioned', 'portioned', 'postconquest']
 
-checker = ''
-while 1:
-    if checker == 'G' or checker == 'V':
-        break
-    else:
-        checker = input('TYPE [G] for checking Grammar Practice / [V] for checking Vocabulary Practice : ').capitalize()
-        
-if checker == 'V':
-    exceldata = pds.read_excel('IELTS WORDS STUDY.xlsx')
-elif checker == 'G':
-    exceldata = pds.read_excel('GRAMMAR PRACTICE.xlsx')
-else:
-    print('WRONG TYPE HAS BEEN CHOSEN')
+
+checker = input('TYPE YOUR FILE NAME(w/o .xlsx) : ')
+exceldata = pds.read_excel(checker+'.xlsx')
 rfndexcel = exceldata.fillna(value=' ').copy()
 
 
-if checker =='V' or checker == 'G':
+if checker != '':
     for i in range(len(rfndexcel)):
         mistyped =[]
-        if checker == 'V':
-            rowno = [3, 11]
-        else:
-            rowno = [1, 13]
-
-        for j in range(rowno[0], rowno[1]):
+        
+        for j in range(0, 11):
             if rfndexcel.loc[i][j] != ' ':
                 targetsentence = spell.split_words(rfndexcel.loc[i][j])
                 misspelled = spell.unknown(targetsentence)
