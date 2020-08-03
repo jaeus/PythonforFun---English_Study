@@ -1,4 +1,8 @@
-#DUPLICATED WORD CHECK
+import pandas as pds
+
+filename = input('Type your file name to ckeck : ')
+rfnddt = pds.read_excel(filename).fillna(value=' ')
+
 print("choose a checking mode\n1-compare with a word list file(csv needed) // 2-check IVP itself // 3-check the new list itself")
 
 selectmode = 0
@@ -10,7 +14,7 @@ while 1:
         print('enter either 1 or 2 or 3')
         
 if selectmode == 1:
-    nw = pds.read_csv('NEW WORDS LIST.csv')
+    nw = pds.read_excel('NEW WORDS LIST.xlsx')
 
     print('total', len(nw), 'words')
     for i in range(len(nw)):
@@ -24,27 +28,23 @@ if selectmode == 1:
 elif selectmode == 2:
     for i in range(len(rfnddt)):
         compareword = rfnddt.loc[i][0]
-        count = 0
-        loc = []
-        for j in range(i, len(rfnddt)):
+        loc = [i+2]
+        for j in range(i+1, len(rfnddt)):
             if compareword == rfnddt.loc[j][0]:
-                count += 1
                 loc.append(j+2)
         
-        if count > 1:
+        if len(loc) > 1:
             print('"%s" IS DUPLICATED AT %s' %(compareword, loc))
 elif selectmode == 3:
     nwitself = pds.read_csv('NEW WORDS LIST.csv')
 
     for i in range(len(nwitself)):
-        nwcnt = 0
-        nwloc = []
+        nwloc = [i+1]
         nwcompare = nwitself.loc[i][0]
-        for j in range(i, len(nwitself)):
+        for j in range(i+1, len(nwitself)):
             if nwcompare == nwitself.loc[j][0]:
-                nwcnt += 1
                 nwloc.append(j+2)
-        if nwcnt > 1:
-            print('"%s(%s)" IS DUPLICATED AT %s' %(nwcompare, i+1, nwloc))
+        if len(nwloc) > 1:
+            print('"%s(%s)" IS DUPLICATED AT %s' %(nwcompare, nwloc))
         
 print('ALL DONE')
