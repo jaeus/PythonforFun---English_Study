@@ -1,0 +1,48 @@
+import pandas as pds
+import os
+import JAYMODULE as jm
+# import sys
+# import shutil
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5 import *
+import time as t
+import requests as rq
+from bs4 import BeautifulSoup as bs
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+import urllib3
+urllib3.disable_warnings()
+
+def htmldata(func_url):
+    return(bs(rq.get(func_url, verify=False, headers={'User-Agent': 'Chrome/90.0.4430.212'}).content, 'html.parser'))
+#     return(bs(rq.get(func_url, verify=False).content, 'html.parser'))
+
+testwordlist = ['mug', 'book', 'do', 'paper']
+
+
+testlist = []
+for word in testwordlist:
+    testurl = jm.ewcmainaddress + word + '_'
+    for pgno in range(1, 8):
+        pg = htmldata(testurl+str(pgno))
+        t.sleep(2)
+
+        if len(pg.find_all(jm.ewcmaintag, {'class' : jm.ewcclasslist[0]})) == 0:
+            break
+
+        print('%s (%s)' %(word, pg.find_all(jm.ewcmaintag, {'class' : jm.ewcclasslist[1]})[0].get_text()), end='\t')
+        print(testurl+str(pgno))
+
+        for i in pg.find_all(jm.ewcmaintag, {'class' : {jm.ewcclasslist[2], jm.ewcclasslist[3]}}):
+            testtext = i.get_text('#')
+            testtext = testtext.replace('# #', '---').replace('#', '')
+            testtext = testtext.replace('---', ' * ')
+            if 'def' in str(i):
+                print('DEFINITION : ', end='\t')
+            else:
+                print('EXAMPLES : ', end='\t')
+                if testtext[0] == ' ':
+                    testtext = testtext[1:]
+            print(testtext)
+        print('\n\n\n\n\n')
