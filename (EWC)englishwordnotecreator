@@ -21,28 +21,63 @@ def htmldata(func_url):
 testwordlist = ['mug', 'book', 'do', 'paper']
 
 
-testlist = []
-for word in testwordlist:
+dtcolumnlist = []
+dtcolumnlist.append('WORD')
+dtcolumnlist.append('TYPE')
+dtcolumnlist.append('LINK')
+for i in range(1, 31):
+    dtcolumnlist.append('IDM_'+str(i))
+    dtcolumnlist.append('DEF_'+str(i))
+    dtcolumnlist.append('IE_'+str(i))
+testdt = pds.DataFrame(columns=dtcolumnlist)
+
+for word in testwordlist[2:3]:
+    testlist = []
     testurl = jm.ewcmainaddress + word + '_'
     for pgno in range(1, 8):
         pg = htmldata(testurl+str(pgno))
-        t.sleep(2)
 
         if len(pg.find_all(jm.ewcmaintag, {'class' : jm.ewcclasslist[0]})) == 0:
             break
-
+            
+        testlist.append(word)
+        testlist.append(pg.find_all(jm.ewcmaintag, {'class' : jm.ewcclasslist[1]})[0].get_text())
+        testlist.append(testurl+str(pgno))
         print('%s (%s)' %(word, pg.find_all(jm.ewcmaintag, {'class' : jm.ewcclasslist[1]})[0].get_text()), end='\t')
         print(testurl+str(pgno))
 
-        for i in pg.find_all(jm.ewcmaintag, {'class' : {jm.ewcclasslist[2], jm.ewcclasslist[3]}}):
-            testtext = i.get_text('#')
-            testtext = testtext.replace('# #', '---').replace('#', '')
-            testtext = testtext.replace('---', ' * ')
-            if 'def' in str(i):
+        extotal = ''
+        for i in pg.find_all(jm.ewcmaintag, {'class' : {jm.ewcclasslist[2], jm.ewcclasslist[3], jm.ewcclasslist[4]}}):
+            testtext = i.get_text('#').replace('# #', '@-@').replace('#', '')
+            if 'idm' in str(i):
+                if extotal != '':
+                    testlist.append('E//' + extotal)
+                    extotal = ''
+                testlist.append('I//' + testtext)
+                print('IDIOM : ', end='\t')
+            elif 'def' in str(i):
+                if extotal != '':
+                    testlist.append('E//' + extotal)
+                    extotal = ''
+                if testlist[len(testlist)-1][0] == 'D':
+                    testlist.append('E//')
+                    testlist.append('I//')
+                elif testlist[len(testlist)-1][0] == 'I':
+                    pass
+                else:
+                    testlist.append('I//')
+                testlist.append('D//' + testtext)
                 print('DEFINITION : ', end='\t')
-            else:
-                print('EXAMPLES : ', end='\t')
+            elif 'x-gs' in str(i):
                 if testtext[0] == ' ':
                     testtext = testtext[1:]
+                if extotal == '':
+                    extotal = testtext
+                else:
+                    extotal = extotal + '@-@' + testtext
+                print('EXAMPLES : ', end='\t')
+            else:
+                print('CHECK THIS CASE : ', end='\t')
             print(testtext)
         print('\n\n\n\n\n')
+        t.sleep(2)
